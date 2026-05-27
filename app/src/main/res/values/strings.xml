@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">mobile hadist</string>
+    <string name="app_name">Hadist Master</string>
+    <string name="level_label">Level: %1$d</string>
+    <string name="streak_label">Streak: 🔥 %1$d</string>
+    <string name="score_label">Score: %1$d</string>
+    <string name="check_button">Periksa Susunan</string>
+    <string name="instruction">Susunlah potongan hadist di bawah ini dengan urutan yang benar (Kanan ke Kiri):</string>
+    <string name="congratulations">Maa Syaa Allah! Susunan Benar.</string>
+    <string name="try_again">Afwan, susunan belum tepat. Coba lagi!</string>
+    <string name="label_drop_zone">Susunan Anda:</string>
+    <string name="label_options_zone">Pilihan Kata:</string>
+
+    <!-- Dialog Strings -->
+    <string name="dialog_success_title">Maa Syaa Allah!</string>
+    <string name="dialog_success_message">Susunan hadits Anda sudah 100% benar.</string>
+    <string name="btn_next_level">Lanjut ke Hadits Berikutnya</string>
 </resources>

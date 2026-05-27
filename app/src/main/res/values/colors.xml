@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="primary_green">#2E7D32</color>
+    <color name="primary_light">#E8F5E9</color>
+    <color name="accent_gold">#FFD700</color>
+    <color name="text_dark">#212121</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="drop_zone_bg">#F5F5F5</color>
 </resources>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_light"
+    tools:context=".HomeActivity">
+
+    <!-- Ornamen Latar Belakang (Opsional, bisa menggunakan gambar nanti) -->
+    <View
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:alpha="0.1"
+        android:background="@drawable/drop_zone_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="-100dp"
+        android:layout_marginTop="-100dp" />
+
+    <LinearLayout
+        android:id="@+id/logo_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/btn_play"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hadits Master"
+            android:textColor="@color/primary_green"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/amiri" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Belajar Hadits dengan Menyenangkan"
+            android:textColor="@color/text_dark"
+            android:textSize="14sp"
+            android:alpha="0.7" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_play"
+        android:layout_width="240dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="48dp"
+        android:text="Mulai Bermain"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="32dp"
+        app:backgroundTint="@color/primary_green"
+        app:icon="@android:drawable/ic_media_play"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/btn_leaderboard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo_container" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_leaderboard"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="240dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        android:text="Leaderboard"
+        android:textColor="@color/primary_green"
+        android:textSize="16sp"
+        app:cornerRadius="32dp"
+        app:strokeColor="@color/primary_green"
+        app:icon="@android:drawable/btn_star_big_on"
+        app:iconTint="@color/primary_green"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_play" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Versi 1.0.0"
+        android:textSize="12sp"
+        android:alpha="0.5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
