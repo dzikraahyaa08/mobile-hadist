@@ -1,41 +1,61 @@
 package com.example.mobilehadist.repository;
 
 import android.content.Context;
-import androidx.sqlite.db.SimpleSQLiteQuery;
-import com.example.mobilehadist.database.AppDatabase;
+import android.util.Log;
+import com.example.mobilehadist.api.ApiClient;
+import com.example.mobilehadist.api.ApiService;
 import com.example.mobilehadist.model.Hadith;
-import com.example.mobilehadist.model.UserProgress;
 import com.example.mobilehadist.model.UserScore;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GameRepository {
-    private final AppDatabase db;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ApiService apiService;
 
     public GameRepository(Context context) {
-        db = AppDatabase.getInstance(context);
+        apiService = ApiClient.getApiService();
     }
 
-    // Mengambil data dari tabel dinamis (misal: shahih_bukhari)
-    public void getHadithsByKitab(String tableName, LoadCallback<List<Hadith>> callback) {
-        executor.execute(() -> {
-            String queryString = "SELECT * FROM " + tableName;
-            SimpleSQLiteQuery query = new SimpleSQLiteQuery(queryString);
-            List<Hadith> hadiths = db.hadithDao().getHadithsFromTable(query);
-            callback.onLoaded(hadiths);
+    // Ambil data dari XAMPP
+    public void getHadithsByKitab(String kitab, LoadCallback<List<Hadith>> callback) {
+        apiService.getHadiths(kitab).enqueue(new Callback<List<Hadith>>() {
+            @Override
+            public void onResponse(Call<List<Hadith>> call, Response<List<Hadith>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onLoaded(response.body(), null);
+                } else {
+                    callback.onLoaded(null, "Server Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Hadith>> call, Throwable t) {
+                Log.e("API_ERROR", "Error: " + t.getMessage());
+                callback.onLoaded(null, t.getMessage());
+            }
         });
     }
 
     public void markAsPassed(String username, Hadith hadith, int score, int streak) {
-        executor.execute(() -> {
-            db.userProgressDao().saveProgress(new UserProgress(hadith.kitab, hadith.nomor, true));
-            db.userScoreDao().insert(new UserScore(username, score, streak, 0, System.currentTimeMillis()));
+        UserScore userScore = new UserScore(username, score, streak, 0, System.currentTimeMillis());
+        apiService.saveScore(userScore).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("API_SUCCESS", "Skor tersimpan di XAMPP!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("API_ERROR", "Gagal simpan skor");
+            }
         });
     }
 
     public interface LoadCallback<T> {
-        void onLoaded(T data);
+        void onLoaded(T data, String error);
     }
 }

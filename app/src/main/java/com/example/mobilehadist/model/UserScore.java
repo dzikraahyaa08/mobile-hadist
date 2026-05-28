@@ -1,11 +1,6 @@
 package com.example.mobilehadist.model;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "leaderboard")
 public class UserScore {
-    @PrimaryKey(autoGenerate = true)
     private int id;
     private String username;
     private int score;

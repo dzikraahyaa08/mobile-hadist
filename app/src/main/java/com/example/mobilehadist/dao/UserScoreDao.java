@@ -1,20 +1,14 @@
 package com.example.mobilehadist.dao;
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-import androidx.room.Update;
 import com.example.mobilehadist.model.UserScore;
 import java.util.List;
 
-@Dao
+/**
+ * Interface ini dinonaktifkan karena beralih ke API MySQL.
+ */
 public interface UserScoreDao {
-    @Query("SELECT * FROM leaderboard ORDER BY score DESC LIMIT 10")
+    // Metode stub agar tidak terjadi error kompilasi
     List<UserScore> getTopScores();
-
-    @Insert
     void insert(UserScore userScore);
-
-    @Update
     void update(UserScore userScore);
 }

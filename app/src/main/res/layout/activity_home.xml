@@ -36,8 +36,7 @@
             android:text="Hadits Master"
             android:textColor="@color/primary_green"
             android:textSize="36sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/amiri" />
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"

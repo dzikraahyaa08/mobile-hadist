@@ -22,6 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "mobile hadist"
+rootProject.name = "mobilehadist"
 include(":app")
- 

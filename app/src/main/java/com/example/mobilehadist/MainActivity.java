@@ -29,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private int currentHadithNumber = 1;
     private final String SELECTED_TABLE = "shahih_bukhari";
 
+    // Score & Streak
+    private int totalScore = 0;
+    private int currentStreak = 0;
+
     // UI Components
     private TextView tvLevel, tvScore, tvStreak;
     private Flow flowDropZone, flowOptionsZone;
@@ -41,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 1. Inisialisasi UI
         initViews();
 
         gameRepository = new GameRepository(this);
@@ -53,12 +56,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Event Klik Tombol Periksa
-        btnCheck.setOnClickListener(v -> {
-            // Logika pengecekan akan disempurnakan oleh Anggota 2 (Drag & Drop)
-            // Untuk sementara kita panggil dialog sukses sebagai simulasi UI Designer
-            checkUserAnswer(""); 
-        });
+        btnCheck.setOnClickListener(v -> checkUserAnswer());
     }
 
     private void initViews() {
@@ -77,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLoaded(List<Hadith> hadiths) {
                 if (hadiths != null && !hadiths.isEmpty()) {
+                    boolean found = false;
                     for (Hadith h : hadiths) {
                         if (h.nomor == nomor) {
                             currentHadith = h;
@@ -84,9 +83,15 @@ public class MainActivity extends AppCompatActivity {
                                 updateUIHeader(h.nomor);
                                 displayHadithWords(h.getShuffledWords());
                             });
-                            return;
+                            found = true;
+                            break;
                         }
                     }
+                    if (!found) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Level " + nomor + " belum tersedia.", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Gagal koneksi ke server.", Toast.LENGTH_SHORT).show());
                 }
             }
         });
@@ -94,49 +99,119 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUIHeader(int level) {
         tvLevel.setText(getString(R.string.level_label, level));
-        tvScore.setText(getString(R.string.score_label, 0));
-        tvStreak.setText(getString(R.string.streak_label, 0));
+        tvScore.setText(getString(R.string.score_label, totalScore));
+        tvStreak.setText(getString(R.string.streak_label, currentStreak));
     }
 
     private void displayHadithWords(List<String> words) {
-        // Bersihkan zona sebelum memuat yang baru
         clearZone(optionsZoneContainer, flowOptionsZone);
         clearZone(dropZoneContainer, flowDropZone);
 
-        LayoutInflater inflater = LayoutInflater.from(this);
-        
         for (String word : words) {
-            // Gunakan parent (optionsZoneContainer) saat inflate agar LayoutParams benar
-            View wordCard = inflater.inflate(R.layout.item_word, optionsZoneContainer, false);
-            wordCard.setId(View.generateViewId());
-            
-            TextView tvWord = wordCard.findViewById(R.id.tv_word_text);
-            tvWord.setText(word);
-
-            // Tambahkan View ke Container
-            optionsZoneContainer.addView(wordCard);
-            
-            // Tambahkan ID ke Flow
-            int[] referencedIds = flowOptionsZone.getReferencedIds();
-            int[] newIds = new int[referencedIds.length + 1];
-            System.arraycopy(referencedIds, 0, newIds, 0, referencedIds.length);
-            newIds[referencedIds.length] = wordCard.getId();
-            flowOptionsZone.setReferencedIds(newIds);
+            addWordToOptions(word);
         }
+    }
+
+    private void addWordToOptions(String word) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View wordCard = inflater.inflate(R.layout.item_word, optionsZoneContainer, false);
+        wordCard.setId(View.generateViewId());
+
+        TextView tvWord = wordCard.findViewById(R.id.tv_word_text);
+        tvWord.setText(word);
+
+        wordCard.setOnClickListener(v -> {
+            optionsZoneContainer.removeView(wordCard);
+            removeFromFlow(flowOptionsZone, wordCard.getId());
+            addToDropZone(wordCard);
+        });
+
+        optionsZoneContainer.addView(wordCard);
+        addToFlow(flowOptionsZone, wordCard.getId());
+    }
+
+    private void addToDropZone(View wordCard) {
+        wordCard.setOnClickListener(v -> {
+            dropZoneContainer.removeView(wordCard);
+            removeFromFlow(flowDropZone, wordCard.getId());
+            addToOptionsZone(wordCard);
+        });
+
+        dropZoneContainer.addView(wordCard);
+        addToFlow(flowDropZone, wordCard.getId());
+    }
+
+    private void addToOptionsZone(View wordCard) {
+        wordCard.setOnClickListener(v -> {
+            optionsZoneContainer.removeView(wordCard);
+            removeFromFlow(flowOptionsZone, wordCard.getId());
+            addToDropZone(wordCard);
+        });
+
+        optionsZoneContainer.addView(wordCard);
+        addToFlow(flowOptionsZone, wordCard.getId());
+    }
+
+    private void addToFlow(Flow flow, int viewId) {
+        int[] referencedIds = flow.getReferencedIds();
+        int[] newIds = new int[referencedIds.length + 1];
+        System.arraycopy(referencedIds, 0, newIds, 0, referencedIds.length);
+        newIds[referencedIds.length] = viewId;
+        flow.setReferencedIds(newIds);
+    }
+
+    private void removeFromFlow(Flow flow, int viewId) {
+        int[] referencedIds = flow.getReferencedIds();
+        if (referencedIds.length == 0) return;
+        int[] newIds = new int[referencedIds.length - 1];
+        int count = 0;
+        for (int id : referencedIds) {
+            if (id != viewId) {
+                newIds[count++] = id;
+            }
+        }
+        flow.setReferencedIds(newIds);
     }
 
     private void clearZone(ViewGroup container, Flow flow) {
         if (container == null || flow == null) return;
-        
-        // Hapus semua view anak kecuali Flow itu sendiri
         for (int i = container.getChildCount() - 1; i >= 0; i--) {
             View child = container.getChildAt(i);
             if (child.getId() != flow.getId()) {
                 container.removeViewAt(i);
             }
         }
-        // Reset referensi ID pada Flow
         flow.setReferencedIds(new int[0]);
+    }
+
+    private void checkUserAnswer() {
+        if (currentHadith == null) return;
+
+        StringBuilder userJoinedWords = new StringBuilder();
+        int[] dropZoneIds = flowDropZone.getReferencedIds();
+        
+        for (int i = 0; i < dropZoneIds.length; i++) {
+            View v = findViewById(dropZoneIds[i]);
+            if (v != null) {
+                TextView tv = v.findViewById(R.id.tv_word_text);
+                userJoinedWords.append(tv.getText().toString());
+                if (i < dropZoneIds.length - 1) {
+                    userJoinedWords.append(" ");
+                }
+            }
+        }
+
+        if (userJoinedWords.toString().trim().equals(currentHadith.arab.trim())) {
+            // Benar
+            totalScore += 100 + (currentStreak * 10);
+            currentStreak++;
+            showSuccessDialog();
+        } else {
+            // Salah
+            currentStreak = 0;
+            updateUIHeader(currentHadith.nomor);
+            Toast.makeText(this, "Susunan masih salah. Coba lagi!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void showSuccessDialog() {
@@ -157,12 +232,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dialog.show();
-    }
-
-    public void checkUserAnswer(String userJoinedWords) {
-        // Simulasi berhasil untuk keperluan testing UI
-        if (currentHadith != null) {
-            showSuccessDialog();
-        }
     }
 }

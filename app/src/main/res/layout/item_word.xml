@@ -23,7 +23,6 @@
         android:textColor="@color/text_dark"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:fontFamily="@font/amiri"
         android:gravity="center" />
 
 </com.google.android.material.card.MaterialCardView>
