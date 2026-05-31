@@ -73,7 +73,12 @@ public class MainActivity extends AppCompatActivity {
     private void loadLevel(int nomor) {
         gameRepository.getHadithsByKitab(SELECTED_TABLE, new GameRepository.LoadCallback<List<Hadith>>() {
             @Override
-            public void onLoaded(List<Hadith> hadiths) {
+            public void onLoaded(List<Hadith> hadiths, String error) {
+                if (error != null) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Koneksi Error: " + error, Toast.LENGTH_LONG).show());
+                    return;
+                }
+
                 if (hadiths != null && !hadiths.isEmpty()) {
                     boolean found = false;
                     for (Hadith h : hadiths) {
@@ -88,10 +93,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     if (!found) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Level " + nomor + " belum tersedia.", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Hadits nomor " + nomor + " tidak ditemukan.", Toast.LENGTH_SHORT).show());
                     }
-                } else {
-                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Gagal koneksi ke server.", Toast.LENGTH_SHORT).show());
                 }
             }
         });
@@ -205,6 +208,11 @@ public class MainActivity extends AppCompatActivity {
             // Benar
             totalScore += 100 + (currentStreak * 10);
             currentStreak++;
+            
+            // SIMPAN SKOR KE XAMPP
+            // Untuk sementara kita gunakan username "Guest"
+            gameRepository.markAsPassed("Guest", currentHadith, totalScore, currentStreak);
+
             showSuccessDialog();
         } else {
             // Salah

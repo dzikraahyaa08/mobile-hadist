@@ -4,8 +4,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    // Menggunakan IP Laptop Anda agar bisa diakses dari emulator/HP asli
-    // Pastikan Firewall mati agar koneksi ke 192.168.100.40 tidak ditolak
+    // Alamat IP Laptop Anda (XAMPP)
+    // Pastikan HP/Emulator dan Laptop di satu WiFi yang sama
+    // Dan Firewall Laptop sudah dimatikan
     private static final String BASE_URL = "http://192.168.100.40/mobilehadist/";
     private static Retrofit retrofit = null;
 
